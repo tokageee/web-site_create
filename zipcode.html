@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ja-JP">
+    <head>
+        <meta charset="utf-8" />
+        <title>郵便番号で住所を検索</title>
+        <script>
+            window.onload = (e) => {
+                const button = document.getElementById("query");
+                button.addEventListener("click", function() {
+                    console.log("clicked");
+                    query();
+                });
+            }
+            async function query() {
+                let zipcode = document.getElementById("zipcode").value;
+                console.log("zipcode=" + zipcode);
+                let url = "https://zipcloud.ibsnet.co.jp/api/search?zipcode=" + zipcode;
+                try {
+                    const response = await fetch(url);
+                    if (!response.ok) {
+                        throw new Error(`Status: ${response.status}`);
+                    }
+                    const result = await response.json();
+                    console.log(result);
+                    const results = result.results[0];
+                    const address = zipcode + " " + results.address1 + results.address2 + results.address3;
+                    const div = document.getElementById("result");
+                    const newDiv = document.createElement("div");
+                    newDiv.textContent = address;
+                    div.appendChild(newDiv);
+                    return result;
+                } catch (error) {
+                    console.error(error.message);
+                }
+            }
+        </script>
+    </head>
+    <body>
+        <h1>郵便番号で住所を検索</h1>
+        郵便番号: <input type="text" id="zipcode" />
+        <button id="query">検索</button>
+        <div id="result">検索結果</div>
+    </body>
+</html>
+ 

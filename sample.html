@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>テストページ</title>
+    <link href="styles/style.css" rel="stylesheet" />
+  </head>
+  <body>
+    <header class="header">
+        <h1 class="shadow fs64">HTMLの練習</h1>
+    </header>
+    <nav>
+        <ul>
+            <li><a href="#段落">段落</a></li>
+            <li><a href="#リスト">リスト</a></li>
+            <li><a href="#リンク">リンク</a></li>
+            <li><a href="#画像">画像</a></li>
+            <li><a href="#テーブル">テーブル</a></li>
+        </ul>
+    </nav>
+    <div class="main">
+        <aside class="sidebar">
+            サイドバー
+        </aside>
+        <div class="contents">
+            <div>
+                <h3 id="段落" class="h3">段落</h3>
+                <p>今日はいい天気です。</p>
+                <p>Webサイト構築の二度目の授業で、HTMLの復讐をしています。</p>
+            </div>
+            <div>
+                <h3 id="リスト" class="h3">リスト</h3>
+                <ul>
+                    <li>Chrome</li>
+                    <li>Firefox</li>
+                    <li>Edge</li>
+                </ul>
+                <ol>
+                    <li>起きる</li>
+                    <li>二度寝する</li>
+                    <li>昼寝する</li>
+                    <li>夜は寝る</li>
+                </ol>
+            </div>
+            <div>
+                <h3 id="リンク" class="h3">リンク</h3>
+                <ul>
+                    <li><a href="https://www.google.com">Google</a></li>
+                    <li><a href="https://www.yahoo.co.jp">Yahoo</a></li>
+                </ul>
+            </div>
+            <div>
+                <h3 id="画像" class="h3">画像</h3>
+                <img src="images/ジバニャン.jpg" width="200" alt="テスト画像" />
+            </div>
+            <div>
+                <h3 id="テーブル" class="h3">テーブル</h3>
+                <table class="table">
+                    <tr>
+                        <td class="td100 left top">1</td>
+                        <td class="td100 center top">2</td>
+                        <td class="td100 right top">3</td>
+                    </tr>
+                    <tr>
+                        <td class="td100 left middle">4</td>
+                        <td class="td100 center middle">5</td>
+                        <td class="td100 right middle">6</td>
+                    </tr>
+                    <tr>
+                        <td class="td100 left bottom">7</td>
+                        <td class="td100 center bottom">8</td>
+                        <td class="td100 right bottom">9</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    <footer class="footer">
+        2026 Webサイト構築
+    </footer>
+  </body>
+</html>
+
+             <div>
+                <h3 id="マップ" class="h3">マップ</h3>
+                <div>
+                    <input type="text" id="address" />
+                    <button id="query">検索</button>
+                </div>
+                <iframe id="map" class="map" src="https://maps.google.co.jp/maps?output=embed&q=博多駅"></iframe>
+            </div>
+     <title>テストページ</title>
+    <link href="styles/style.css" rel="stylesheet" />
+    <script>
+        function query() {
+            let address = document.getElementById('address').value;
+            let url = 'https://maps.google.co.jp/maps?output=embed&q=' + address;
+            let map = document.getElementById('map');
+            map.src = url;
+        }
+    </script> 
+                <div>
+                <h3 id="診断" class="h3">診断</h3>
+                <div>
+                    <input id="name" type="text" />さんの
+                    <input id="prop" type="text" />度を
+                    <button id="shindan">診断</button>
+                    <div id="result"></div>
+                </div>
+            </div>
+    <script>
+             const shindanButton = document.getElementById('shindan');
+            console.log(shindanButton);
+            shindanButton.addEventListener('click', function() {
+                shindan();
+            });
+         function shindan() {
+            let name = document.getElementById('name').value;
+            let prop = document.getElementById('prop').value;
+            console.log('診断');
+            let v = hashCode(name + prop) % 101;
+            v = Math.abs(v);
+            let result = document.getElementById('result');
+            let s = name + 'さんの' + prop + '度は、' + v + '%です。';
+            result.textContent = s;
+        }
+        function hashCode(s) {
+            let hash = 0;
+            for (let i = 0; i < s.length; i++) {
+                hash = hash * 31 + s.charCodeAt(i);
+            }
+            return hash;
+    
+        }
+    </script>
+

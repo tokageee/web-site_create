@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="ja-JP">
+    <head>
+        <meta charset="utf-8" />
+        <title>天気予報</title>
+        <style>
+            #results table {
+                border-collapse: collapse;
+            }
+            #results td,th {
+                border: 1px solid black;
+            }
+            #results img {
+                width: 50px;
+            }
+        </style>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script>
+            const baseUrl = "https://api.open-meteo.com/v1/forecast?";
+            let lat = "35.6785";
+            let lng = "139.6823";
+            window.onload = (e) => {
+                const button = document.getElementById("query");
+                button.addEventListener("click", function () {
+                    console.log("clicked");
+                    updateLatLng();
+                })
+            }
+
+            async function updateLatLng() {
+                const loc = document.getElementById("location").value;
+                console.log(loc);
+                let url = "https://msearch.gsi.go.jp/address-search/AddressSearch?q=" + loc;
+                try {
+                    const response = await fetch(url);
+                    if (!response.ok) {
+                        throw new Error(`Status: ${response.status}`);
+                    }
+                    const result = await response.json();
+                    console.log(result);
+                    lat = result[0].geometry.coordinates[1];
+                    lng = result[0].geometry.coordinates[0];
+                    console.log('lat=' + lat + ", lng=" + lng);
+                    query();
+                } catch (error) {
+                    console.log(error);
+                }
+            }
+
+            async function query() {
+                // 【変更箇所①】APIリクエストURLに降水確率（precipitation_probability_mean）を追加
+                let url = baseUrl + "latitude=" + lat;
+                url = url + "&longitude=" + lng;
+                url = url + "&daily=temperature_2m_max,temperature_2m_min,weather_code";
+                url = url + ",sunrise,sunset";
+                url = url + ",precipitation_probability_mean";
+                url = url + "&timezone=Asia%2FTokyo";
+                console.log(url);
+                try {
+                    const response = await fetch(url);
+                    if (!response.ok) {
+                        throw new Error(`Status: ${response.status}`);
+                    }
+                    const result = await response.json();
+                    console.log(result);
+                    const div = document.getElementById("results");
+                    div.innerHTML = "";
+                    const table = document.createElement('table');
+                    const tr = createHeader();
+                    table.appendChild(tr);
+                    
+                    // 【変更箇所③】ループ内でAPIから降水確率を取得し、dateTr関数に渡すように変更
+                    for (let i = 0; i < 7; i++) {
+                        const time = result.daily.time[i];
+                        const wc = result.daily.weather_code[i];
+                        const max = result.daily.temperature_2m_max[i];
+                        const min = result.daily.temperature_2m_min[i];
+                        const sunrise = result.daily.sunrise[i];
+                        const sunset = result.daily.sunset[i];
+                        const ppm = result.daily.precipitation_probability_mean[i]; // 追加
+                        const tr = dateTr(time, wc, max, min, sunrise, sunset, ppm); // ppm を引数に追加
+                        table.appendChild(tr);
+                    }
+                    div.appendChild(table);
+                    drawChart(result);
+                } catch (error) {
+                    console.log(error);
+                }
+            }
+
+            function drawChart(result) {
+                const chart = document.getElementById('chart');
+                new Chart(chart, {
+                    type: 'line',
+                    data: {
+                        labels: result.daily.time,
+                        datasets: [
+                            {
+                                label: '最高気温',
+                                data: result.daily.temperature_2m_max,
+                                borderColor: "rgba(255, 0, 0, 1)",
+                            },
+                            {
+                                label: '最低気温',
+                                data: result.daily.temperature_2m_min,
+                                borderColor: "rgba(0, 0, 255, 1)",
+                            }
+                        ]
+                    },
+                });
+            }
+
+            // 【変更箇所②】テーブルのヘッダー（見出し）に「降水確率」の列を追加
+            function createHeader() {
+                const tr = document.createElement('tr');
+                // 見出しのthタグをtrに追加
+                let th = document.createElement('th');
+                th.textContent = '日付';
+                tr.appendChild(th);
+                th = document.createElement('th');
+                th.textContent = '天気';
+                tr.appendChild(th);
+                th = document.createElement('th');
+                th.textContent = '最高気温';
+                tr.appendChild(th);
+                th = document.createElement('th');
+                th.textContent = '最低気温';
+                tr.appendChild(th);
+                th = document.createElement('th');
+                th.textContent = '日の出';
+                tr.appendChild(th);
+                th = document.createElement('th');
+                th.textContent = '日の入';
+                tr.appendChild(th);
+                th = document.createElement('th');
+                th.textContent = '降水確率';
+                tr.appendChild(th);
+                return tr;
+            }
+
+            // 【変更箇所④】関数の引数に ppm を追加し、テーブルのデータセル（td）として最後尾に追加
+            function dateTr(time, wc, max, min, sunrise, sunset, ppm) { // 引数にppmを追加
+                const tr = document.createElement('tr');
+                // tr に td を追加する処理
+                let td = document.createElement('td');
+                td.textContent = time;
+                tr.appendChild(td);
+                td = document.createElement('td');
+                const w = createWeather(wc);
+                td.appendChild(w);
+                tr.appendChild(td);
+                td = document.createElement('td');
+                td.textContent = max;
+                tr.appendChild(td);
+                td = document.createElement('td');
+                td.textContent = min;
+                tr.appendChild(td);
+                td = document.createElement('td');
+                td.textContent = sunrise.substring(sunrise.indexOf('T') + 1);
+                tr.appendChild(td);
+                td = document.createElement('td');
+                td.textContent = sunset.substring(sunset.indexOf('T') + 1);
+                tr.appendChild(td);
+                td = document.createElement('td'); // 追加
+                td.textContent = ppm + '%'; // 追加
+                tr.appendChild(td); // 追加
+                return tr;
+            }
+
+            function createWeather(wc) {
+                const div = document.createElement('div');
+                const img = document.createElement('img');
+                img.src = code2IconUrl(wc);
+                div.appendChild(img);
+                const br = document.createElement('br');
+                div.appendChild(br);
+                const span = document.createElement('span');
+                span.textContent = code2jp(wc);
+                div.appendChild(span);
+                return div;
+            }
+
+            function code2jp(code) {
+                if (code < 10) return "晴れ";
+                if (code < 50) return "霧";
+                if (code < 70) return "霧雨";
+                if (code < 80) return "雪";
+                if (code < 85) return "雨";
+                if (code < 90) return "雪"
+                return "雷雨";
+            }
+
+            function code2IconUrl(code) {
+                if (code < 10) return "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiaLQPi4hmTNQJq2cG-7HEn4fBQFfPXi1sVnpvE7GiN1s2jb9VTUihZ3QS6JIY6JHGA_tZE0M9H0Vw38GseIChOt2nLeabJe-dATLgnmhxVWI_fl_GV_9MeKSG6aNUivHYCR688z7U1xmKG/s1600/mark_tenki_hare.png";
+                if (code < 50) return "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgqhcAxdnCPa6wbLjT95MZzO6e5am0p5i0X1n0OPWzfQo1T3IZUJK_cL_CYdGy99KMfSWk_BJ20B6Le99nGJiFkhBX0w16P_eEkOPzpmw8hSswOJAUKR7go99x3Qi5d0MR2U_G5m5i4Zi29/s1600/mark_tenki_umbrella.png";
+                if (code < 70) return "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgqhcAxdnCPa6wbLjT95MZzO6e5am0p5i0X1n0OPWzfQo1T3IZUJK_cL_CYdGy99KMfSWk_BJ20B6Le99nGJiFkhBX0w16P_eEkOPzpmw8hSswOJAUKR7go99x3Qi5d0MR2U_G5m5i4Zi29/s1600/mark_tenki_umbrella.png";
+                if (code < 80) return "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgoVgokmDpxXETNWeL_helXC-glGBMCDyMW6-kFs1zjGb1NfhVcepOL8lmVN-ObibJgr7BezZ7Pc-CpQkzHH4iLjLU7vQFjUoMb9ga8saKZ5yhnZGU9OFkjshbiYjKi3Ld6fD36WqBntc4/s1600/tenki_snow.png";
+                if (code < 85) return "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgqhcAxdnCPa6wbLjT95MZzO6e5am0p5i0X1n0OPWzfQo1T3IZUJK_cL_CYdGy99KMfSWk_BJ20B6Le99nGJiFkhBX0w16P_eEkOPzpmw8hSswOJAUKR7go99x3Qi5d0MR2U_G5m5i4Zi29/s1600/mark_tenki_umbrella.png";
+                if (code < 90) return "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgoVgokmDpxXETNWeL_helXC-glGBMCDyMW6-kFs1zjGb1NfhVcepOL8lmVN-ObibJgr7BezZ7Pc-CpQkzHH4iLjLU7vQFjUoMb9ga8saKZ5yhnZGU9OFkjshbiYjKi3Ld6fD36WqBntc4/s1600/tenki_snow.png"
+                return "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiBKPPw9GxtnydVzqfUPt40qS_dnuQGQGwemQ28HTGlDgucx_QFFC7RO79puwjgzxn2foEW5HzXl-6CrdKAxc2m6REaLO7-vc2xRjJ0Hq4GBK354CI4uRlAk4E3KiLdJDLbn-46Nj-bFz6c/s1600/mark_tenkiu_kaminari.png";
+            }
+        </script>
+    </head>
+    <body>
+        <h1>天気予報</h1>
+        <div>
+            地名:<input type="text" id="location" />
+            <button id="query">取得</button>
+        </div>
+        <div id="results"></div>
+        <canvas id="chart"></canvas>
+     biographical text -->
+</html>

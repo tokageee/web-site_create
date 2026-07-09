@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="ja-JP">
+  <head>
+    <meta charset="utf-8" />
+    <title>ポケモンAPI</title>
+    <script>
+        window.onload = (e) => {
+            const button = document.getElementById("query");
+            button.addEventListener("click", function() {
+                console.log("clicked");
+                query();
+            });
+        }
+        async function query() {
+            let number = document.getElementById("number").value;
+            let url = "https://pokeapi.co/api/v2/pokemon-species/" + number;
+            const imageUrlBase = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/';
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error(`Status: ${response.status}`);
+                }
+                const result = await response.json();
+                console.log(result);
+                const r = document.getElementById('result');
+                const name = result.names[0].name;
+                let e = document.getElementById('name-ja');
+                e.textContent = name;
+                e = document.getElementById('id');
+                e.textContent = result.id;
+                e = document.getElementById('name-en');
+                e.textContent = result.name;
+                let img = document.createElement('img');
+                img.src = imageUrlBase + result.id + '.png';
+                e = document.getElementById('img');
+                e.innerHTML = '';
+                e.appendChild(img);
+                for (let i = 0; i < result.genera.length; i++) {
+                    if (result.genera[i].language.name === 'ja') {
+                        let type = result.genera[i].genus;
+                        e = document.getElementById('type');
+                        e.textContent = type;
+                    }
+                }
+                let s = '';
+                for (let i = 0; i < result.flavor_text_entries.length; i++) {
+                    if (result.flavor_text_entries[i].language.name === 'ja') {
+                        s = s + result.flavor_text_entries[i].flavor_text;
+                    }
+                }
+                e = document.getElementById('desc');
+                e.textContent = s;
+            } catch (error) {
+                console.error(error.message);
+            }
+        }
+    </script>
+    <style>
+        table, th, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+    </style>
+  </head>
+  <body>
+    <h1>ポケモンAPI</h1>
+    <div>
+    図鑑ナンバー: <input type="text" id="number" />
+    <button id="query">検索</button>
+    </div>
+    <table>
+        <tr>
+            <th>ID</th>
+            <td id="id"></td>
+        </tr>
+        <tr>
+            <th>日本語名</th>
+            <td id="name-ja"></td>
+        </tr>
+        <tr>
+            <th>英語名</th>
+            <td id="name-en"></td>
+        </tr>
+        <tr>
+            <th>画像</th>
+            <td id="img"></td>
+        </tr>
+        <tr>
+            <th>タイプ</th>
+            <td id="type"></td>
+        </tr>
+        <tr>
+            <th>説明</th>
+            <td id="desc"></td>
+        </tr>
+    </table>
+    <div id="result"></div>
+  </body>
+</html>

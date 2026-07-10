@@ -11,9 +11,9 @@ async function updateStarRailData() {
   }
 
   try {
-    // 公式APIから基本データを直接取得（ライブラリは一切使いません）
+    // 公式APIからデータを取得
     const url = `https://bbs-api-os.hoyolab.com/game_record/card/wapi/getGameRecordCard?uid=${hoyoUid}`;
-
+    
     const response = await fetch(url, {
       method: 'GET',
       headers: {
@@ -30,24 +30,21 @@ async function updateStarRailData() {
       throw new Error(`APIエラー: ${resData.message} (コード: ${resData.retcode})`);
     }
 
-    // スターレイル（game_id: 6）のデータを抽出
     const hsrCard = resData.data.list.find(game => game.game_id === 6);
-
+    
     if (!hsrCard) {
       throw new Error("スターレイルの戦績データが見つかりませんでした。");
     }
 
-    // データの抽出
-    const trailblazeLevel = hsrCard.level; // 開拓レベル
-    const activeDays = hsrCard.data.find(d => d.name === "アクティブ日数" || d.name === "Active Days")?.value || "0"; // アクティブ日数
+    const trailblazeLevel = hsrCard.level;
+    const activeDays = hsrCard.data.find(d => d.name === "アクティブ日数" || d.name === "Active Days")?.value || "0";
 
-    // index.html を読み込んで正確に置換
-    // index.html を読み込んで正確に置換
+    // index.html を読み込む
     let html = fs.readFileSync('index.html', 'utf8');
 
-    // 【修正】前後にスペースや改行（\s*）があっても、IDの中身だけを確実に狙い撃ちするルールにします
-    html = html.replace(/id=["']hsr-level["']>([\s\S]*?)<\/span>/, `id="hsr-level">Lv.${trailblazeLevel}</span>`);
-    html = html.replace(/id=["']hsr-stamina["']>([\s\S]*?)<\/span>/, `id="hsr-stamina">${activeDays}日</span>`);
+    // 【超強力修正】IDの前にどんなスペース・特殊文字・改行があっても、id="hsr-..." の中身だけを絶対に置換するルール
+    html = html.replace(/(id\s*=\s*["']hsr-level["'][^>]*>)([\s\S]*?)(<\/span>)/i, `$1Lv.${trailblazeLevel}$3`);
+    html = html.replace(/(id\s*=\s*["']hsr-stamina["'][^>]*>)([\s\S]*?)(<\/span>)/i, `$1${activeDays}日$3`);
 
     // 上書き保存
     fs.writeFileSync('index.html', html);
@@ -55,7 +52,7 @@ async function updateStarRailData() {
 
   } catch (error) {
     console.error("データの取得または更新に失敗しました:", error);
-    process.exit(1);
+    process.exit(1); 
   }
 }
 

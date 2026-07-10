@@ -1,6 +1,6 @@
 const fs = require('fs');
-// クライアントクラスと言語設定を読み込みます
-const { HoyoAPIClient, LanguageEnum } = require('@vermaysha/hoyolab-api');
+// エラーの原因になりやすい部品（LanguageEnum）を外し、Clientだけを読み込みます
+const { HoyoAPIClient } = require('@vermaysha/hoyolab-api');
 
 async function updateStarRailData() {
   const ltoken = process.env.HOYO_LTOKEN;
@@ -12,17 +12,16 @@ async function updateStarRailData() {
   }
 
   try {
-    // 1. クライアントを初期化し、Cookieを設定
+    // 1. クライアントを初期化し、Cookieを設定。言語は直接文字列で指定します
     const client = new HoyoAPIClient({
       cookie: {
         ltoken_v2: ltoken,
         ltuid_v2: ltuid
       },
-      lang: LanguageEnum.JAPANESE
+      lang: 'ja-jp' // ← 直接日本語を設定することでエラーを回避します
     });
 
-    // 2. スターレイル（starrail）モジュールを使ってデータを取得
-    // ※ ここを client.dsr から client.starrail に修正しました！
+    // 2. スターレイルモジュールを使ってデータを取得
     const record = await client.starrail.getRecordCard();
     const fullData = await client.starrail.getRealtimeNote();
 

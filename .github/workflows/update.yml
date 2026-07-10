@@ -1,34 +1,36 @@
-name: Update Star Rail Data
+name: Update Honkai Star Rail Data
 
 on:
   schedule:
-    - cron: '0 15 * * *'
-  workflow_dispatch:
+    - cron: '0 * * * *' # 1時間に1回自動実行
+  workflow_dispatch: # 手動実行用ボタン
 
 jobs:
-  build-and-deploy:
+  update-data:
     runs-on: ubuntu-latest
+
     steps:
-    - name: チェックアウト
-      uses: actions/checkout@v4
+    - name: Checkout repository
+      uses: actions/checkout@v3
 
-    - name: Node.jsのセットアップ
-      uses: actions/setup-node@v4
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
       with:
-        node-version: '20'
+        node-node: '18'
 
-    - name: ライブラリのインストール
-      run: npm install # ← ここを追加しました！
+    - name: Install JSDOM # 解析ライブラリをインストール
+      run: npm install jsdom
 
-    - name: データ取得スクリプトの実行
+    - name: Run update script
       env:
         HOYO_LTOKEN: ${{ secrets.HOYO_LTOKEN }}
         HOYO_LTUID: ${{ secrets.HOYO_LTUID }}
+        HOYO_UID: ${{ secrets.HOYO_UID }}
       run: node update_data.js
 
-    - name: 変更をGitHub Pagesへコミット＆プッシュ
+    - name: Commit and Push changes
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
         git add index.html
-        git diff --cached --quiet || (git commit -m "Auto update Star Rail data" && git push)
+        git diff --cached --quiet || (git commit -m "Auto-update Star Rail stats" && git push)

@@ -1,4 +1,5 @@
 const fs = require('fs');
+const { JSDOM } = require('jsdom');
 
 async function updateStarRailData() {
   const ltoken = process.env.HOYO_LTOKEN;
@@ -39,16 +40,21 @@ async function updateStarRailData() {
     const trailblazeLevel = hsrCard.level;
     const activeDays = hsrCard.data.find(d => d.name === "アクティブ日数" || d.name === "Active Days")?.value || "0";
 
-    // index.html を読み込む
-    let html = fs.readFileSync('index.html', 'utf8');
+    // index.html を安全に構造として読み込む
+    const htmlContent = fs.readFileSync('index.html', 'utf8');
+    const dom = new JSDOM(htmlContent);
+    const document = dom.window.document;
 
-    // 【超強力修正】IDの前にどんなスペース・特殊文字・改行があっても、id="hsr-..." の中身だけを絶対に置換するルール
-    html = html.replace(/(id\s*=\s*["']hsr-level["'][^>]*>)([\s\S]*?)(<\/span>)/i, `$1Lv.${trailblazeLevel}$3`);
-    html = html.replace(/(id\s*=\s*["']hsr-stamina["'][^>]*>)([\s\S]*?)(<\/span>)/i, `$1${activeDays}日$3`);
+    // IDをピンポイントで指定して安全に書き換え（前後のHTMLは1文字も壊れません）
+    const levelElement = document.getElementById('hsr-level');
+    const staminaElement = document.getElementById('hsr-stamina');
 
-    // 上書き保存
-    fs.writeFileSync('index.html', html);
-    console.log(`HTMLの更新に成功しました！ レベル: ${trailblazeLevel}, アクティブ日数: ${activeDays}`);
+    if (levelElement) levelElement.textContent = `Lv.${trailblazeLevel}`;
+    if (staminaElement) staminaElement.textContent = `${activeDays}日`;
+
+    // 綺麗に書き換わったHTMLを上書き保存
+    fs.writeFileSync('index.html', dom.serialize());
+    console.log(`HTML構造を安全に更新しました！ レベル: ${trailblazeLevel}, アクティブ日数: ${activeDays}`);
 
   } catch (error) {
     console.error("データの取得または更新に失敗しました:", error);

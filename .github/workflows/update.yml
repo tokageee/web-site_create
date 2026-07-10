@@ -16,11 +16,7 @@ jobs:
     - name: Node.jsのセットアップ
       uses: actions/setup-node@v4
       with:
-        node-node-version: '20'
-
-    # 必要に応じてAPIライブラリなどをインストールする場合はここで行う
-    # - name: 依存関係のインストール
-    #   run: npm install
+        node-version: '20' # ← ここを修正しました！
 
     - name: データ取得スクリプトの実行
       env:

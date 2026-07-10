@@ -1,5 +1,5 @@
 const fs = require('fs');
-// 最新のクライアントクラスと言語設定を読み込みます
+// クライアントクラスと言語設定を読み込みます
 const { HoyoAPIClient, LanguageEnum } = require('@vermaysha/hoyolab-api');
 
 async function updateStarRailData() {
@@ -21,9 +21,10 @@ async function updateStarRailData() {
       lang: LanguageEnum.JAPANESE
     });
 
-    // 2. スターレイル（dsr）モジュールを使ってデータを取得
-    const record = await client.dsr.getRecordCard();
-    const fullData = await client.dsr.getRealtimeNote();
+    // 2. スターレイル（starrail）モジュールを使ってデータを取得
+    // ※ ここを client.dsr から client.starrail に修正しました！
+    const record = await client.starrail.getRecordCard();
+    const fullData = await client.starrail.getRealtimeNote();
 
     // データの抽出
     const trailblazeLevel = record.list?.[0]?.level || "取得失敗";

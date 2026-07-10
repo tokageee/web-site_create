@@ -1,6 +1,6 @@
 const fs = require('fs');
-// ライブラリを丸ごとインポートします
-const HoyoAPI = require('@vermaysha/hoyolab-api');
+// 最新のクライアントクラスと言語設定を読み込みます
+const { HoyoAPIClient, LanguageEnum } = require('@vermaysha/hoyolab-api');
 
 async function updateStarRailData() {
   const ltoken = process.env.HOYO_LTOKEN;
@@ -12,29 +12,18 @@ async function updateStarRailData() {
   }
 
   try {
-    // 1. スターレイルモジュールを初期化
-    // ライブラリの構造に応じて安全にインスタンスを作成します
-    const StarRailClass = HoyoAPI.StarRail || HoyoAPI.StarRailModule;
-    if (!StarRailClass) {
-      throw new Error("ライブラリからStarRailモジュールが見つかりませんでした。");
-    }
-    
-    const srr = new StarRailClass();
-    
-    // Cookieを設定
-    srr.cookie.setCookie({
-      ltoken_v2: ltoken,
-      ltuid_v2: ltuid
+    // 1. クライアントを初期化し、Cookieを設定
+    const client = new HoyoAPIClient({
+      cookie: {
+        ltoken_v2: ltoken,
+        ltuid_v2: ltuid
+      },
+      lang: LanguageEnum.JAPANESE
     });
-    
-    // 言語を日本語に設定
-    // LanguageEnumが取れない場合は文字列で 'ja-jp' を指定
-    const lang = HoyoAPI.LanguageEnum?.JAPANESE || 'ja-jp';
-    srr.setLanguage(lang);
 
-    // 2. リアルタイム戦績と基本情報を取得
-    const record = await srr.getRecordCard();
-    const fullData = await srr.getRealtimeNote();
+    // 2. スターレイル（dsr）モジュールを使ってデータを取得
+    const record = await client.dsr.getRecordCard();
+    const fullData = await client.dsr.getRealtimeNote();
 
     // データの抽出
     const trailblazeLevel = record.list?.[0]?.level || "取得失敗";

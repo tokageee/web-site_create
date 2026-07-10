@@ -11,7 +11,7 @@ async function updateStarRailData() {
   }
 
   try {
-    // 公式APIから基本データを直接取得
+    // 公式APIから基本データを直接取得（ライブラリは一切使いません）
     const url = `https://bbs-api-os.hoyolab.com/game_record/card/wapi/getGameRecordCard?uid=${hoyoUid}`;
     
     const response = await fetch(url, {

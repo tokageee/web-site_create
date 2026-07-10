@@ -2,9 +2,8 @@ name: Update Star Rail Data
 
 on:
   schedule:
-    # 毎日午前0時（日本時間）に実行する設定 (UTCでは前日の15:00)
     - cron: '0 15 * * *'
-  workflow_dispatch: # 手動でいつでも実行できるようにするボタン
+  workflow_dispatch:
 
 jobs:
   build-and-deploy:
@@ -16,7 +15,10 @@ jobs:
     - name: Node.jsのセットアップ
       uses: actions/setup-node@v4
       with:
-        node-version: '20' # ← ここを修正しました！
+        node-version: '20'
+
+    - name: ライブラリのインストール
+      run: npm install # ← ここを追加しました！
 
     - name: データ取得スクリプトの実行
       env:

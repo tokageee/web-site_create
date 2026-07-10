@@ -1,0 +1,7 @@
+{
+  "name": "hsr-updater",
+  "version": "1.0.0",
+  "dependencies": {
+    "@vermaysha/hoyolab-api": "^2.1.2"
+  }
+}

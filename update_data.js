@@ -11,7 +11,7 @@ async function updateStarRailData() {
   }
 
   try {
-    // 公式APIから基本データを取得
+    // 公式APIから基本データを直接取得
     const url = `https://bbs-api-os.hoyolab.com/game_record/card/wapi/getGameRecordCard?uid=${hoyoUid}`;
     
     const response = await fetch(url, {
@@ -38,7 +38,7 @@ async function updateStarRailData() {
     }
 
     // データの抽出
-    const trailblazeLevel = hsrCard.level; // 開拓レベル（例: 70）
+    const trailblazeLevel = hsrCard.level; // 開拓レベル
     const activeDays = hsrCard.data.find(d => d.name === "アクティブ日数" || d.name === "Active Days")?.value || "0"; // アクティブ日数
 
     // index.html を読み込んで正確に置換

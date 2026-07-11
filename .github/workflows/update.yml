@@ -1,0 +1,36 @@
+name: Update Honkai Star Rail Data
+
+on:
+  schedule:
+    - cron: '0 * * * *'
+  workflow_dispatch:
+
+jobs:
+  update-data:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run update script
+        env:
+          HOYO_LTOKEN: ${{ secrets.HOYO_LTOKEN }}
+          HOYO_LTUID: ${{ secrets.HOYO_LTUID }}
+          HOYO_UID: ${{ secrets.HOYO_UID }}
+        run: node update_data.js
+
+      - name: Commit and Push changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add index.html
+          git diff --cached --quiet || (git commit -m "Auto-update Star Rail stats" && git push)

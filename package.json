@@ -2,6 +2,8 @@
   "name": "website_create",
   "version": "1.0.0",
   "private": true,
-  "type": "module"
-
+  "type": "module",
+  "dependencies": {
+    "hoyoapi": "^1.2.0"
   }
+}

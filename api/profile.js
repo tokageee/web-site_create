@@ -1,29 +1,30 @@
+import { HonkaiStarRail } from "hoyoapi/hsr";
+
 export default async function handler(req, res) {
-  const { uid } = req.query;
+    try {
+        const uid = Number(req.query.uid);
 
-  if (!uid) {
-    return res.status(400).json({
-      error: "UIDを入力してください",
-    });
-  }
+        const hsr = new HonkaiStarRail({
+            uid,
+            cookie: {
+                ltuid: process.env.HOYO_LTUID,
+                ltoken: process.env.HOYO_LTOKEN
+            }
+        });
 
-  try {
-    const response = await fetch(
-      `https://api.mihomo.me/sr_info_parsed/${uid}?lang=jp`
-    );
+        const profile = await hsr.record.records();
+        const characters = await hsr.record.characters();
 
-    const body = await response.text();
+        res.status(200).json({
+            profile,
+            characters
+        });
 
-    console.log("Status:", response.status);
-    console.log("Body:", body);
+    } catch (err) {
+        console.error(err);
 
-    res.status(response.status).send(body);
-
-  } catch (err) {
-    console.error(err);
-
-    res.status(500).json({
-      error: err.message,
-    });
-  }
+        res.status(500).json({
+            error: err.message
+        });
+    }
 }

@@ -343,6 +343,79 @@ nav li a {
     will-change: transform;
     animation: herta-fast-roll-across 0.8s linear infinite;
 }
+/* =========================
+   検索ボックスのスタイル (PC・共通)
+========================= */
+.search-box {
+    margin: 40px 0;
+    padding: 30px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+    text-align: center; /* 全体を中央寄せ */
+}
+
+.search-box h2 {
+    margin-top: 0;
+    margin-bottom: 20px;
+}
+
+/* 入力欄のデザイン */
+#searchInput {
+    width: 60%;
+    max-width: 400px;
+    padding: 12px 16px;
+    font-size: 16px;
+    border: 2px solid pink;
+    border-radius: 8px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+/* 入力欄にカーソルを合わせた時の色 */
+#searchInput:focus {
+    border-color: rgb(65, 65, 65);
+}
+
+/* ボタンエリアを横並びにして中央へ */
+.search-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+/* ボタン共通のデザイン */
+.search-buttons button {
+    padding: 12px 30px;
+    font-size: 16px;
+    font-weight: bold;
+    color: white;
+    background-color: pink;
+    border: 2px solid rgb(65, 65, 65); /* サイトのヘッダーに合わせたフチ */
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* ボタンにホバーした時のフワッと浮くアニメーション */
+.search-buttons button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* リセットボタンだけ色を少し変えてメリハリをつける */
+#resetBtn {
+    background-color: #f1f1f1;
+    color: #333;
+    border-color: #ccc;
+}
+
+#resetBtn:hover {
+    background-color: #e2e2e2;
+}
 
 /* =========================
    タブレット

@@ -271,17 +271,17 @@
                     </div>
                 </div>
             </div>
-            <section class="search-box">
-
-                <h2>崩壊：スターレイル UID検索</h2>
-
-                <input id="uid" type="text" placeholder="UIDを入力">
-
-                <button id="searchBtn">
-                    検索
-                </button>
-
-            </section>
+<section class="search-box">
+    <h2>キャラクター検索</h2>
+    <!-- idを uid から searchInput に変更 -->
+    <input id="searchInput" type="text" placeholder="キャラ名を入力 (例: カフカ)">
+    
+    <!-- 検索ボタンとリセットボタンを横並びにするためのコンテナ（任意） -->
+    <div class="search-buttons">
+        <button id="searchBtn">検索</button>
+        <button id="resetBtn">リセット</button>
+    </div>
+</section>
 
             <div id="result"></div>
 

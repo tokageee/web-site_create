@@ -487,5 +487,10 @@ nav li a {
     .finish img {
         width: 220px;
     }
+    .search-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
 
 }

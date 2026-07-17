@@ -1,30 +1,42 @@
-console.log("profile.js loaded");
+document.addEventListener('DOMContentLoaded', () => {
+    const searchInput = document.getElementById('searchInput');
+    const searchBtn = document.getElementById('searchBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const characters = document.querySelectorAll('.character');
 
-window.addEventListener("DOMContentLoaded", () => {
-    const button = document.getElementById("searchBtn");
+    // 検索処理をまとめた関数
+    const executeSearch = () => {
+        // 入力された文字を取得（全角・半角スペースを取り除く）
+        const keyword = searchInput.value.trim();
 
-    console.log("button =", button);
+        characters.forEach(card => {
+            // カード内の全テキスト（名前、声優、説明文など）を取得
+            const textContent = card.innerText;
+            
+            // キーワードが含まれているか判定
+            if (textContent.includes(keyword)) {
+                card.style.display = 'block'; // 一致したら表示
+            } else {
+                card.style.display = 'none';  // 一致しなければ非表示
+            }
+        });
+    };
 
-    if (!button) {
-        console.error("searchBtn が見つかりません");
-        return;
-    }
+    // ①「検索」ボタンをクリックした時に実行
+    searchBtn.addEventListener('click', executeSearch);
 
-    button.addEventListener("click", async () => {
-        const uid = document.getElementById("uid").value;
-
-        if (!uid) {
-            alert("UIDを入力してください");
-            return;
+    // ②入力欄で「Enterキー」を押した時にも実行
+    searchInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            executeSearch();
         }
+    });
 
-        try {
-            const response = await fetch(`/api/profile?uid=${uid}`);
-            const data = await response.json();
-
-            console.log(data);
-        } catch (err) {
-            console.error(err);
-        }
+    // ③「リセット」ボタンをクリックした時の処理（全表示に戻す）
+    resetBtn.addEventListener('click', () => {
+        searchInput.value = ''; // 入力欄を空にする
+        characters.forEach(card => {
+            card.style.display = 'block'; // 全キャラを再表示
+        });
     });
 });

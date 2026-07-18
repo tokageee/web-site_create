@@ -231,6 +231,22 @@ nav li a {
     transform: translateY(0);
 }
 
+.character-description .desc-link {
+    color: pink; 
+    font-weight: bold;
+    text-decoration: none; 
+    display: inline-block;
+    margin-top: 8px; 
+    border-bottom: 1px solid pink; 
+    transition: all 0.2s ease;
+}
+
+
+.character-description .desc-link:hover {
+    color: white;
+    border-bottom-color: white; 
+    transform: translateX(5px); 
+}
 .contents {
     width: 80%;
 }
@@ -269,58 +285,6 @@ nav li a {
     }
 }
 
-.map {
-    width: 100%;
-    max-width: 600px;
-    height: 300px;
-    border: 1px solid black;
-}
-
-#gameover-dialog {
-    margin: 0 auto;
-    position: absolute;
-    top: 100px;
-    padding: 20px;
-    text-align: center;
-}
-
-#gameover-close {
-    padding: 5px;
-    border: 1px solid pink;
-    border-radius: 5px;
-}
-
-#gameover-dialog,
-#cleared-dialog {
-    position: fixed;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    margin: 0;
-    padding: 20px;
-    text-align: center;
-    z-index: 1000;
-    background: #fff;
-    border: 1px solid #bbb;
-    border-radius: 6px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
-    min-width: 220px;
-}
-
-#gameover-close,
-#cleared-close {
-    padding: 6px 10px;
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    border-radius: 5px;
-    background-color: #f0f0f0;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-#gameover-close:hover,
-#cleared-close:hover {
-    background-color: #e0e0e0;
-}
 
 
 .container {
